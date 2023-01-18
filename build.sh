@@ -82,32 +82,39 @@ case "${lang}" in
         ;;
 esac
 
-git clone "https://github.com/${org}/${repo}.git" \
-    --depth 1 --quiet
-cp "${grammardir}"/grammar.js "${sourcedir}"
+if [ ! -d "${repo}" ]
+then
+    git clone "https://github.com/${org}/${repo}.git" \
+        --depth 1 --quiet
+    cp "${grammardir}"/grammar.js "${sourcedir}"
+    cd "${sourcedir}"
+else
+    cd "${sourcedir}"
+    git pull --quiet
+fi
 # We have to go into the source directory to compile, because some
 # C files refer to files like "../../common/scanner.h".
-cd "${sourcedir}"
 
 ### Build
+FLAGS="-O3 -march=native -DNDEBUG -fno-semantic-interposition -fPIC"
 
-cc -fPIC -c -I. parser.c
+cc $FLAGS -c -I. parser.c
 # Compile scanner.c.
 if test -f scanner.c
 then
-    cc -fPIC -c -I. scanner.c
+    cc $FLAGS -c -I. scanner.c
 fi
 # Compile scanner.cc.
 if test -f scanner.cc
 then
-    c++ -fPIC -I. -c scanner.cc
+    c++ $FLAGS -I. -c scanner.cc
 fi
 # Link.
 if test -f scanner.cc
 then
-    c++ -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
+    c++ $FLAGS -shared *.o -o "libtree-sitter-${lang}.${soext}"
 else
-    cc -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
+    cc $FLAGS -shared *.o -o "libtree-sitter-${lang}.${soext}"
 fi
 
 ### Copy out
@@ -115,4 +122,4 @@ fi
 mkdir -p "${topdir}/dist"
 cp "libtree-sitter-${lang}.${soext}" "${topdir}/dist"
 cd "${topdir}"
-rm -rf "${repo}"
+# rm -rf "${repo}"
