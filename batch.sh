@@ -38,7 +38,4 @@ languages=(
     'yaml'
 )
 
-for language in "${languages[@]}"
-do
-    ./build.sh "${language}"
-done
+parallel ./build.sh ::: ${languages[@]}

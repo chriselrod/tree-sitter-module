@@ -86,12 +86,12 @@ if [ ! -d "${repo}" ]
 then
     git clone "https://github.com/${org}/${repo}.git" \
         --depth 1 --quiet
-    cp "${grammardir}"/grammar.js "${sourcedir}"
     cd "${sourcedir}"
 else
     cd "${sourcedir}"
     git pull --quiet
 fi
+cp "../${grammardir}"/grammar.js grammar.js
 # We have to go into the source directory to compile, because some
 # C files refer to files like "../../common/scanner.h".
 
@@ -120,6 +120,5 @@ fi
 ### Copy out
 
 mkdir -p "${topdir}/dist"
-cp "libtree-sitter-${lang}.${soext}" "${topdir}/dist"
+mv "libtree-sitter-${lang}.${soext}" "${topdir}/dist"
 cd "${topdir}"
-# rm -rf "${repo}"
