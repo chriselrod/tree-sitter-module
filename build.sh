@@ -91,7 +91,7 @@ else
     cd "${sourcedir}"
     git pull --quiet
 fi
-cp "../${grammardir}"/grammar.js grammar.js
+cp "${topdir}/${grammardir}"/grammar.js grammar.js
 # We have to go into the source directory to compile, because some
 # C files refer to files like "../../common/scanner.h".
 
